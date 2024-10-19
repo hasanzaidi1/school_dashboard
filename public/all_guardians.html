@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>All Guardians</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .cta-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease;
+            display: block;
+            margin: 20px auto;
+            text-align: center;
+            text-decoration: none;
+            width: 150px;
+        }
+
+        .cta-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>All Guardians</h1>
+
+    <table id="guardian-table">
+        <thead>
+            <tr>
+                <th>Guardian ID</th>
+                <th>First Name</th>
+                <th>Middle Initial</th>
+                <th>Last Name</th>
+                <th>Cell</th>
+                <th>Email</th>
+                <th>Street Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>ZIP</th>
+                <th>Gender</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <a href="/guardian.html" class="cta-button">Back to Guardian Page</a>
+
+    <script>
+        // Fetch the guardians data from the backend
+        fetch('/all-guardians')
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('guardian-table').getElementsByTagName('tbody')[0];
+
+                data.forEach(guardian => {
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td>${guardian.g_id}</td>
+                        <td>${guardian.g_f_name}</td>
+                        <td>${guardian.g_mi || ''}</td>
+                        <td>${guardian.g_l_name || ''}</td>
+                        <td>${guardian.g_cell || ''}</td>
+                        <td>${guardian.g_email || ''}</td>
+                        <td>${guardian.g_staddress || ''}</td>
+                        <td>${guardian.g_city || ''}</td>
+                        <td>${guardian.g_state || ''}</td>
+                        <td>${guardian.g_zip || ''}</td>
+                        <td>${guardian.gender || ''}</td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching guardian data:', error));
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Students</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const response = await fetch('/all-students');
+            const students = await response.json();
+            displayStudents(students);
+        });
+
+        function displayStudents(students) {
+            const tableBody = document.getElementById('studentTableBody');
+            tableBody.innerHTML = ''; // Clear previous results
+
+            if (students.length > 0) {
+                students.forEach(student => {
+                    const dob = new Date(student.dob); // Convert to Date object
+                    const formattedDOB = dob.toLocaleDateString('en-US', { // Format the date
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    });
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.F_Name}</td>
+                        <td>${student.MI}</td>
+                        <td>${student.L_Name}</td>
+                        <td>${formattedDOB}</td> <!-- Use formattedDOB here -->
+                        <td>${student.st_address}</td>
+                        <td>${student.city}</td>
+                        <td>${student.state}</td>
+                        <td>${student.zip}</td>
+                        <td>${student.st_email}</td>
+                        <td>${student.st_cell}</td>
+                        <td>${student.student_location}</td>
+                        <td>${student.st_gender}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="11">No students found.</td>';
+                tableBody.appendChild(row);
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>All Students</h1>
+        <nav>
+            <ul>
+                <button onclick="window.location.href='/students'">Back to Student Registration</button>
+                <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <table>
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Middle Initial</th>
+                    <th>Last Name</th>
+                    <th>Date of Birth</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Zip</th>
+                    <th>Email</th>
+                    <th>Phone Number</th>
+                    <th>Location</th>
+                    <th>Gender</th>
+                </tr>
+            </thead>
+            <tbody id="studentTableBody">
+                <!-- Student data will be inserted here -->
+            </tbody>
+        </table>
+    </main>
+</body>
+</html>

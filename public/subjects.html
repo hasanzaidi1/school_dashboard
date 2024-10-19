@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subject Management</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+header h1 {
+    color: white;
+}
+
+h2 {
+    color: #333;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+input[type="text"] {
+    padding: 10px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Subject Management</h1>
+        <nav>
+            <ul>
+                <button onclick="window.location.href='/admin.html'">Back to Admin Page</button>
+                <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+            </ul>
+        </nav>
+    </header>
+    
+    <form id="subjectForm">
+        <label for="subject">Add Subject:</label>
+        <input type="text" id="subject" name="subject" required>
+        <button type="submit">Add Subject</button>
+    </form>
+
+    <h2>All Subjects</h2>
+    <ul id="subjectList"></ul>
+
+    <script>
+        // Function to fetch and display all subjects
+        async function fetchSubjects() {
+            const response = await fetch('/api/subjects'); // Make sure this endpoint is created
+            const subjects = await response.json();
+            const subjectList = document.getElementById('subjectList');
+            subjectList.innerHTML = ''; // Clear the existing list
+
+            subjects.forEach(subject => {
+                const li = document.createElement('li');
+                li.textContent = subject.subject; // Adjust according to your data structure
+                subjectList.appendChild(li);
+            });
+        }
+
+        // Function to handle form submission
+        document.getElementById('subjectForm').addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent default form submission
+
+            const subjectInput = document.getElementById('subject');
+            const subjectValue = subjectInput.value;
+
+            // Make a POST request to add a new subject
+            await fetch('/api/subjects', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ subject: subjectValue }),
+            });
+
+            subjectInput.value = ''; // Clear the input field
+            fetchSubjects(); // Refresh the subject list
+        });
+
+        // Fetch subjects when the page loads
+        fetchSubjects();
+    </script>
+</body>
+</html>

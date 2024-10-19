@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Teachers</title>
+</head>
+<body>
+    <header>
+        <h1>Teacher Registration</h1>
+        <nav>
+            <ul>
+                <button onclick="window.location.href='all_teachers.html'">See All Teachers</button>
+                <button onclick="window.location.href='/admin.html'">Admin Privilege</button>
+                <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+            </ul>
+        </nav>
+        
+    </header>
+
+    
+
+    <!-- Success/Error Message Containers -->
+    <div id="message-container" class="success-message" style="display:none;">Teacher registered successfully!</div>
+    <div id="error-container" class="error-message" style="display:none;">Registration failed. Please try again.</div>
+
+    <!-- Registration Form -->
+    <form id="teacher-registration-form" action="/register-teacher" method="POST">
+        <label for="t_f_name">First Name:</label>
+        <input type="text" id="t_f_name" name="t_f_name" required>
+    
+        <label for="t_mi">Middle Initial:</label>
+        <input type="text" id="t_mi" name="t_mi">
+    
+        <label for="t_l_name">Last Name:</label>
+        <input type="text" id="t_l_name" name="t_l_name" required>
+    
+        <label for="t_email">Email:</label>
+        <input type="email" id="t_email" name="t_email" required>
+    
+        <label for="t_phone">Phone:</label>
+        <input type="text" id="t_phone" name="t_phone">
+    
+        <label for="gender">Gender:</label>
+        <div>
+            <input type="radio" id="male" name="gender" value="Male" required>
+            <label for="male">Male</label>
+            
+            <input type="radio" id="female" name="gender" value="Female" required>
+            <label for="female">Female</label>
+        </div>
+    
+        <label for="t_staddress">Street Address:</label>
+        <input type="text" id="t_staddress" name="t_staddress">
+    
+        <label for="t_city">City:</label>
+        <input type="text" id="t_city" name="t_city">
+    
+        <label for="t_state">State:</label>
+        <input type="text" id="t_state" name="t_state">
+    
+        <label for="t_zip">ZIP Code:</label>
+        <input type="text" id="t_zip" name="t_zip">
+    
+        <button type="submit">Register</button>
+    </form>
+
+    <script>
+        document.getElementById('teacher-registration-form').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+    
+            const formData = {
+                t_f_name: document.getElementById('t_f_name').value,
+                t_mi: document.getElementById('t_mi').value,
+                t_l_name: document.getElementById('t_l_name').value,
+                t_email: document.getElementById('t_email').value,
+                t_phone: document.getElementById('t_phone').value,
+                gender: document.querySelector('input[name="gender"]:checked').value,
+                t_staddress: document.getElementById('t_staddress').value,
+                t_city: document.getElementById('t_city').value,
+                t_state: document.getElementById('t_state').value,
+                t_zip: document.getElementById('t_zip').value
+            };
+    
+            console.log('Form data:', formData); // Log the form data to check
+    
+            fetch('/register-teacher', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Send JSON data
+                },
+                body: JSON.stringify(formData) // Convert the formData to JSON
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data); // Log the response data
+                if (data.success) {
+                    document.getElementById('message-container').style.display = 'block'; // Show success message
+                    document.getElementById('error-container').style.display = 'none'; // Hide error message
+                } else {
+                    document.getElementById('error-container').style.display = 'block'; // Show error message
+                    document.getElementById('message-container').style.display = 'none'; // Hide success message
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('error-container').style.display = 'block'; // Show error message
+            });
+        });
+    </script>
+    
+</body>
+</html>

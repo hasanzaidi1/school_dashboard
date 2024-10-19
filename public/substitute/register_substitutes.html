@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./../styles.css">
+    <title>Register Substitute</title>
+    <style>
+        /* Add some basic styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .hidden {
+            display: none; /* Hide elements with this class */
+        }
+
+        .btn-container {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .cta-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .cta-button:active {
+            background-color: #004085;
+        }
+
+        /* Form styling */
+        form {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            display: none; /* Initially hidden */
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #d9edf7;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Substitute</h1>
+        <nav>
+            <ul>
+                <button onclick="showSubs()">Show All Subs</button>
+                <button onclick="window.location.href='/admin.html'">Admin Privilege</button>
+                <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <form id="substitute-form">
+            <h1>Register Substitute</h1><br>
+            <label for="sub_f_name">First Name</label>
+            <input type="text" id="sub_f_name" name="sub_f_name" required>
+    
+            <label for="sub_l_name">Last Name</label>
+            <input type="text" id="sub_l_name" name="sub_l_name" required>
+    
+            <label for="sub_email">Email</label>
+            <input type="email" id="sub_email" name="sub_email" required>
+    
+            <label for="sub_phone">Phone</label>
+            <input type="tel" id="sub_phone" name="sub_phone">
+    
+            <button type="submit">Register</button>
+        </form>
+    </div>
+    
+    <!-- Table to display all substitutes -->
+    <table id="subs-table">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody id="subs-tbody">
+        </tbody>
+    </table>
+
+<script>
+    document.getElementById('substitute-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            sub_f_name: document.getElementById('sub_f_name').value,
+            sub_l_name: document.getElementById('sub_l_name').value,
+            sub_email: document.getElementById('sub_email').value,
+            sub_phone: document.getElementById('sub_phone').value
+        };
+
+        try {
+            const response = await fetch('/register-substitute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert('Substitute registered successfully');
+                document.getElementById('substitute-form').reset();
+            } else {
+                alert('Error: ' + result.message);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while registering the substitute.');
+        }
+    });
+
+    // Function to fetch and display all substitutes
+    async function showSubs() {
+        try {
+            const response = await fetch('/fetch-substitutes');
+            const result = await response.json();
+
+            const table = document.getElementById('subs-table');
+            const tbody = document.getElementById('subs-tbody');
+            tbody.innerHTML = ''; // Clear the table body
+
+            result.substitutes.forEach(sub => {
+                const row = `<tr>
+                    <td>${sub.sub_f_name}</td>
+                    <td>${sub.sub_l_name}</td>
+                    <td>${sub.sub_email}</td>
+                    <td>${sub.sub_phone}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+
+            table.style.display = 'block'; // Show the table
+        } catch (error) {
+            console.error('Error fetching substitutes:', error);
+            alert('An error occurred while fetching substitutes.');
+        }
+    }
+</script>
+
+</body>
+</html>

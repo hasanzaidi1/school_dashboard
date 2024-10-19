@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        nav button {
+            margin: 5px;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px auto;
+            width: 70%;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: none; /* Hide forms by default */
+        }
+
+        .active {
+            display: block; /* Show active form */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="tel"],
+        input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .btn-container {
+            margin-bottom: 20px;
+        }
+
+        .gender-options {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+
+        .name {
+            display: flex;
+        }
+
+        .gender-title {
+            padding-right: 20px;
+        }
+
+        .student-name input {
+            margin-right: 10px;
+            flex: 1;
+        }
+
+        .gender-options input {
+            margin-left: 5px; /* Space between label and radio button */
+        }
+
+        .btn-container {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+    </style>
+    <script>
+        document.getElementById('findStudentForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const firstName = document.getElementById('find-fname').value;
+            const lastName = document.getElementById('find-lname').value;
+
+            const response = await fetch('/find-student', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    'find-fname': firstName,
+                    'find-lname': lastName,
+                }),
+            });
+
+            const result = await response.json();
+            displayResults(result);
+        });
+
+        function displayResults(result) {
+            const resultDiv = document.getElementById('results');
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            if (result.students && result.students.length > 0) {
+                result.students.forEach(student => {
+                    const studentDiv = document.createElement('div');
+                    studentDiv.textContent = `Name: ${student.F_Name} ${student.L_Name}, Email: ${student.st_email}`;
+                    resultDiv.appendChild(studentDiv);
+                });
+            } else {
+                resultDiv.textContent = result.message; // Show message if no students found
+            }
+        }
+
+        function formatPhoneNumber(input) {
+            const cleaned = ('' + input.value).replace(/\D/g, '');
+            const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
+            if (match) {
+                input.value = (match[1] ? '(' + match[1] + ') ' : '') +
+                              (match[2] ? match[2] + '-' : '') +
+                              match[3];
+            }
+        }
+
+        function showForm(formId) {
+            // Hide all forms
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.classList.remove('active');
+            });
+
+            // Show the selected form
+            const activeForm = document.getElementById(formId);
+            if (activeForm) {
+                activeForm.classList.add('active');
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Student Registration</h1>
+        <nav>
+            <ul>
+                <button onclick="window.location.href='/admin.html'">Admin Privilege</button>
+                <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="btn-container">
+            <button onclick="showForm('find-student-form')">Find Student</button>
+            <button onclick="showForm('registration-form')">Register Student</button>
+            <button onclick="window.location.href='all_students.html'">See All Students</button>
+        </div>
+        
+        <!-- Find Student Form -->
+        <form id="find-student-form" action="/find-student" method="POST">
+            <h2>Find Student</h2>
+            <label for="find-fname">First Name:</label>
+            <input type="text" id="find-fname" name="find-fname" placeholder="First Name">
+        
+            <label for="find-lname">Last Name:</label>
+            <input type="text" id="find-lname" name="find-lname" placeholder="Last Name">
+        
+            <button type="submit">Find</button>
+        </form>
+        <div id="results"></div>
+        
+        <!-- Registration Form -->
+        <form action="/register" method="POST" id="registration-form">
+            <h2>Register a New Student</h2>
+            <label for="fname">Student Name:</label>
+            <div class="name">
+                <input placeholder="First" type="text" id="fname" name="fname" required>
+                <input placeholder="Middle Initial" type="text" id="MI" name="MI">
+                <input placeholder="Last" type="text" id="lname" name="lname" required>
+            </div>
+
+            <div class="DOB">
+                <label for="DOB">Date Of Birth:</label>
+                <input type="date" id="DOB" name="DOB" required>    
+            </div>
+            
+            <div class="address">
+                <label for="Address">Address:</label>
+                <input type="text" id="st_address" name="st_address" placeholder="Street" required>
+                <input type="text" id="city" name="city" placeholder="City" required>
+                <input type="text" id="state" name="state" placeholder="State" required>
+                <input type="number" id="zip" name="zip" placeholder="Zipcode" required>
+            </div>
+            
+            <div class="student-contact">
+                <label for="contact">Student Contact:</label>
+                <input type="text" id="st_email" name="st_email" placeholder="Email" required>
+                <input type="text" id="st_cell" name="st_cell" placeholder="Phone Number" maxlength="10" required>
+            </div>
+
+            <label for="student_location">Student Location:</label>
+            <select id="student_location" name="student_location" required>
+                <option value="on-site">On-Site</option>
+                <option value="remote">Remote</option>
+            </select>
+
+            <div class="gender-options">
+                <h4 class="gender-title">Gender:</h4>
+                <label for="male">Male</label>
+                <input type="radio" id="male" name="gender" value="male" required>
+                
+                <label for="female">Female</label>
+                <input type="radio" id="female" name="gender" value="female" required>
+            </div>
+
+            <button type="submit">Register</button>
+        </form>
+        
+    </main>
+
+</body>
+</html>

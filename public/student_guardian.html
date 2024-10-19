@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student-Guardian Relationship</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 5px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0; /* Add margin for spacing */
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        nav {
+            margin-bottom: 20px; /* Add space below navigation */
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: space-around; /* Space buttons evenly */
+        }
+    </style>
+</head>
+<body>
+    
+    <header>
+        <nav>
+            <ul>
+                <li><button onclick="window.location.href='/admin.html'">Admin Privilege</button></li>
+                <li><button class="logout-btn" onclick="window.location.href='/logout'">Logout</button></li>
+                <li><button onclick="window.location.href='/all_student_guardian_table.html'">See Guardian-Student Table</button></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <h1>Assign Guardian to Student</h1>
+
+    <form id="assign-guardian-form">
+        <label for="student-select">Select Student:</label>
+        <select id="student-select" name="st_id"></select>
+    
+        <label for="guardian-select">Select Guardian:</label>
+        <select id="guardian-select" name="g_id"></select>
+    
+        <label for="relationship">Relationship:</label>
+        <select name="relationship_type">
+            <option value="Father">Father</option>
+            <option value="Mother">Mother</option>
+            <option value="Friend">Friend</option>
+            <option value="Relative">Relative</option>
+        </select>
+    
+        <button type="submit">Assign Guardian</button>
+    </form>
+
+    <script>
+        async function fetchStudentNames() {
+            const response = await fetch('/getStudentNames');
+            const students = await response.json();
+            const studentSelect = document.getElementById('student-select');
+    
+            students.forEach(student => {
+                const option = document.createElement('option');
+                option.value = student.St_ID; // Assuming this is the ID
+                option.textContent = student.full_name;
+                studentSelect.appendChild(option);
+            });
+        }
+
+        async function fetchGuardianNames() {
+            const response = await fetch('/getGuardianNames');
+            const guardians = await response.json();
+            const guardianSelect = document.getElementById('guardian-select');
+
+            guardians.forEach(guardian => {
+                const option = document.createElement('option');
+                option.value = guardian.g_id; // Assuming this is the ID
+                option.textContent = guardian.full_name;
+                guardianSelect.appendChild(option);
+            });
+        }
+
+        // Call these functions on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchStudentNames();
+            fetchGuardianNames();
+        });
+
+        // Form submission handling
+        document.getElementById('assign-guardian-form').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData);
+
+            const response = await fetch('/assignGuardian', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Guardian assigned successfully!');
+            } else {
+                alert('Error assigning guardian');
+            }
+        });
+    </script>
+</body>
+</html>

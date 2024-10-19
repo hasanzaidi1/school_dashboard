@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./../styles.css">
+    <title>Teachers Portal</title>
+    <style>
+        /* Reset some default browser styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .btn-container {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .cta-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .cta-button:active {
+            background-color: #004085;
+        }
+
+        /* Style for tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            display: none; /* Initially hide all tables */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow for depth */
+            border-radius: 8px; /* Rounded corners */
+            overflow: hidden; /* Hide overflow for rounded corners */
+        }
+
+        th, td {
+            border: 1px solid #ddd; /* Light gray border */
+            padding: 12px; /* Increase padding for more space */
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff; /* Primary color for header */
+            color: white; /* White text for header */
+            font-weight: bold; /* Bold text for header */
+        }
+
+        td {
+            background-color: #f9f9f9; /* Light background for table cells */
+            transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        td:hover {
+            background-color: #f1f1f1; /* Light hover effect */
+        }
+
+        /* Style for alternating row colors */
+        tbody tr:nth-child(even) td {
+            background-color: #f2f2f2; /* Light gray for even rows */
+        }
+
+        tbody tr:hover td {
+            background-color: #e9ecef; /* Slightly darker gray on row hover */
+        }
+
+        /* Add some responsiveness */
+        @media (max-width: 600px) {
+            table {
+                font-size: 14px; /* Smaller font on small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Teachers Portal</h1>
+        <nav>
+            <ul>
+                <button onclick="window.location.href='/teachers/teacher_portal.html'">Teacher Portal</button>
+                <button class="logout-btn" onclick="window.location.href='/teacher-logout'">Logout</button>
+            </ul>
+        </nav>
+    </header>
+    <div class="btn-container">
+        <button class="cta-button" onclick="window.location.href='./../index.html'">Home</button>
+        <button class="cta-button" onclick="showTable('classes')">Classes</button>
+        <button class="cta-button" onclick="window.location.href='sub_request.html'">Request Substitute</button>
+        <button class="cta-button" onclick="showTable('studentGuardian')">Student-Guardian</button>
+        <button class="cta-button" onclick="showTable('studentLevel')">Student-Level</button>
+        <button class="cta-button" onclick="showTable('teachers')">Teachers</button>
+    </div>
+
+    <!-- Student-Guardian Table -->
+    <table id="guardian-table">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Guardian Name</th>
+                <th>Relationship Type</th>
+                <th>Cell</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <!-- Classes Table -->
+    <table id="classes-table">
+        <thead>
+            <tr>
+                <th>Class Name</th>
+                <th>Teacher</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    
+    <!-- Student-Level Table -->
+    <table id="stud-lvl-table">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Level</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <!-- Teachers Table -->
+    <table id="teachers-table">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        // Function to fetch student-guardian data and display it
+        function fetchStudentGuardianData() {
+            fetch('/getStudentGuardianData') // Use your existing route
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('guardian-table').getElementsByTagName('tbody')[0];
+                    tableBody.innerHTML = ''; // Clear previous data
+
+                    data.forEach(entry => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${entry.student_name}</td>
+                            <td>${entry.guardian_name}</td>
+                            <td>${entry.relationship_type}</td>
+                            <td>${entry.g_cell || ''}</td>
+                            <td>${entry.g_email || ''}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    document.getElementById('guardian-table').style.display = 'table'; // Show the guardian table
+                })
+                .catch(error => console.error('Error fetching guardian data:', error));
+        }
+
+        // Function to fetch assigned levels data and display it
+        function fetchAssignedLevelsData() {
+            fetch('/getAssignedLevels') // Use your existing route
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('stud-lvl-table').getElementsByTagName('tbody')[0];
+                    tableBody.innerHTML = ''; // Clear previous data
+
+                    data.forEach(entry => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${entry.st_id || 'N/A'}</td>
+                            <td>${entry.full_name || 'N/A'}</td>
+                            <td>${entry.level_id || 'N/A'}</td> <!-- Use level_id if this is what you intended -->
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    document.getElementById('stud-lvl-table').style.display = 'table'; // Show the student-level table
+                })
+                .catch(error => console.error('Error fetching assigned levels data:', error));
+        }
+
+        // Function to fetch teachers data and display it
+        // Function to fetch teachers data and display it
+function fetchTeachersData() {
+    console.log("Fetching Teachers Data..."); // Log when the function is called
+    fetch('/fetch-teachers') // Updated route
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const tableBody = document.getElementById('teachers-table').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear previous data
+
+            data.teachers.forEach(entry => { // Adjusted to access 'teachers' key
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.full_name || 'N/A'}</td>
+                    <td>${entry.t_email || 'N/A'}</td>
+                    <td>${entry.t_phone || 'N/A'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            document.getElementById('teachers-table').style.display = 'table'; // Show the teachers table
+        })
+        .catch(error => console.error('Error fetching teachers data:', error));
+}
+
+
+        // Function to show the selected table
+        function showTable(table) {
+            // Hide all tables
+            document.getElementById('guardian-table').style.display = 'none';
+            document.getElementById('classes-table').style.display = 'none';
+            document.getElementById('stud-lvl-table').style.display = 'none'; // Hide the student-level table
+            document.getElementById('teachers-table').style.display = 'none'; // Hide the teachers table
+
+            // Show specific table based on the argument
+            if (table === 'studentGuardian') {
+                fetchStudentGuardianData(); // Fetch data for Student-Guardian table
+            } else if (table === 'classes') {
+                // Implement fetching for classes if needed
+                document.getElementById('classes-table').style.display = 'table'; // Show the classes table
+            } else if (table === 'studentLevel') {
+                fetchAssignedLevelsData(); // Fetch data for Student-Level table
+            } else if (table === 'teachers') {
+                fetchTeachersData(); // Fetch data for Teachers table
+            }
+        }
+    </script>
+</body>
+</html>

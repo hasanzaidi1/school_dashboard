@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Students</title>
+    <link rel="stylesheet" href="./../styles.css">
+    <style>
+        /* Reset some default browser styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .btn-container {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .cta-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .cta-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .cta-button:active {
+            background-color: #004085;
+        }
+
+        #student-info {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            width: 70%;
+        }
+        
+        .student-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Parents Portal</h1>
+        <nav>
+            <ul>
+                <li><button onclick="window.location.href='parents_portal.html'">Parent Portal</button></li>
+                <li><button class="logout-btn" onclick="window.location.href='parents_login.html'">Logout</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div>
+        <form action="/students-by-parent" method="POST">
+            <label>Parent Email Address</label>
+            <p style="font-size: 12px; color: #770303;">*Parent email associated with the student(s)</p>
+            <input type="text" name="parent_email" id="parent_email" placeholder="Email" required>
+            <button type="submit" class="cta-button">Submit</button>
+        </form>
+    </div>
+
+    <div id="student-info"></div>
+
+    <script>
+        const form = document.querySelector('form');
+        const studentInfoDiv = document.getElementById('student-info');
+    
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Prevent the default form submission
+    
+            const formData = new FormData(form);
+            const parentEmail = formData.get('parent_email');
+    
+            try {
+                const response = await fetch('/students-by-parent', {
+                    method: 'POST',
+                    body: JSON.stringify({ parent_email: parentEmail }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+    
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    studentInfoDiv.innerHTML = `<p style="color: red;">${errorData.message}</p>`;
+                    return;
+                }
+    
+                const students = await response.json();
+                // Clear previous student info
+                studentInfoDiv.innerHTML = '';
+    
+                // Display the students' information
+                if (students.length > 0) {
+                    students.forEach(student => {
+                        const studentDiv = document.createElement('div');
+                        studentDiv.classList.add('student-card');
+                        studentDiv.innerHTML = `
+                            <p><strong>Name:</strong> ${student.F_Name} ${student.L_Name}</p>
+                            <p><strong>DOB:</strong> ${formatDateOfBirth(student.dob)}</p>
+                            <p><strong>Email:</strong> ${student.st_email}</p>
+                            <p><strong>Phone:</strong> ${student.st_cell}</p>
+                        `;
+                        studentInfoDiv.appendChild(studentDiv);
+                    });
+                } else {
+                    studentInfoDiv.innerHTML = '<p>No students found for this email.</p>';
+                }
+    
+            } catch (error) {
+                console.error('Error:', error);
+                studentInfoDiv.innerHTML = `<p style="color: red;">Failed to fetch student information.</p>`;
+            }
+        });
+
+        function formatDateOfBirth(date) {
+            const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+            return new Intl.DateTimeFormat('en-CA', options).format(new Date(date));
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Assign Level to Student</title>
+    <style>
+        /* General styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+
+
+form {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin: 10px 0 5px;
+}
+
+/* Select and button styles */
+select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Table styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table tr:hover {
+    background-color: #ddd;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    select, button {
+        font-size: 14px;
+    }
+}
+
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Assign Level to Student</h1>
+        <ul>
+            <button onclick="window.location.href='/admin.html'">Admin Privilege</button>
+            <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+        </ul>
+    </header>
+    <form id="assignment-form">
+        <label for="student-select">Select Student:</label>
+        <select id="student-select"></select>
+
+        <label for="level-select">Select Level:</label>
+        <select id="level-select"></select>
+
+        <button type="submit">Assign Level</button>
+    </form>
+
+    <h2>Assigned Levels</h2>
+    <table id="student-level-table">
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Level ID</th>
+                <th>Full Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be populated here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Fetch students, levels, and assigned levels when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchStudents();
+            fetchLevels();
+            fetchAssignedLevels();
+        });
+
+        // Fetch students and populate the select dropdown
+        async function fetchStudents() {
+            try {
+                const response = await fetch('/getStudentNames');
+                const students = await response.json();
+                const studentSelect = document.getElementById('student-select');
+
+                // Clear previous options
+                studentSelect.innerHTML = '';
+                
+                students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.St_ID; // Assuming St_ID is the identifier
+                    option.textContent = student.full_name; // Use the correct field name
+                    studentSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching students:', error);
+            }
+        }
+
+        // Fetch levels and populate the select dropdown
+        async function fetchLevels() {
+            try {
+                const response = await fetch('/getLevels');
+                const levels = await response.json();
+                const levelSelect = document.getElementById('level-select');
+
+                // Clear previous options
+                levelSelect.innerHTML = '';
+
+                levels.forEach(level => {
+                    const option = document.createElement('option');
+                    option.value = level.level_id; // Assuming level_id is the identifier
+                    option.textContent = level.level_number; // Assuming level_number is the display name
+                    levelSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching levels:', error);
+            }
+        }
+
+        // Fetch assigned levels and populate the table
+        async function fetchAssignedLevels() {
+            try {
+                const response = await fetch('/getAssignedLevels');
+                const assignedLevels = await response.json();
+                const tableBody = document.getElementById('student-level-table').querySelector('tbody');
+
+                // Clear previous rows
+                tableBody.innerHTML = '';
+
+                assignedLevels.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.st_id}</td>
+                        <td>${record.level_id}</td>
+                        <td>${record.full_name}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching assigned levels:', error);
+            }
+        }
+
+        // Handle the form submission to assign the level to the student
+        document.getElementById('assignment-form').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent form submission
+
+            const studentId = document.getElementById('student-select').value;
+            const levelId = document.getElementById('level-select').value;
+
+            try {
+                const response = await fetch('/assignLevel', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ studentId, levelId }),
+                });
+
+                if (response.ok) {
+                    alert('Level assigned successfully!');
+                    fetchAssignedLevels(); // Refresh the assigned levels table
+                } else {
+                    alert('Error assigning level.');
+                }
+            } catch (error) {
+                console.error('Error assigning level:', error);
+            }
+        });
+    </script>
+</body>
+</html>

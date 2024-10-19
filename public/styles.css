@@ -1,0 +1,180 @@
+/* General Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f1f5f9;
+    color: #333;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #1c5d99;
+    padding: 20px;
+    color: white;
+    position: relative; /* Ensure the header is positioned correctly */
+    top: 0;
+    z-index: 1000; /* Ensure it stays above other content */
+}
+
+header h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 50px;
+    background-color: #fdfdfd;
+    background-image: url('mosque-background.jpg');
+    background-size: cover;
+    background-position: center;
+    color: #1c5d99;
+}
+
+.hero h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+.cta-button {
+    padding: 10px 20px;
+    background-color: #1c5d99;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cta-button:hover {
+    background-color: #134a78;
+}
+
+/* Events Section */
+#upcoming-events {
+    padding: 40px;
+    background-color: #fff;
+    text-align: center;
+}
+
+#upcoming-events h3 {
+    font-size: 28px;
+    margin-bottom: 30px;
+}
+
+.event-list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.event-card {
+    background-color: #f1f5f9;
+    padding: 20px;
+    border-radius: 10px;
+    width: 200px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.event-card h4 {
+    font-size: 20px;
+    color: #1c5d99;
+    margin-bottom: 10px;
+}
+
+/* Footer */
+footer {
+    background-color: #1c5d99;
+    color: white;
+    text-align: center;
+    padding: 1px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+.social-icons a img {
+    width: 24px;
+    margin: 0 10px;
+}
+
+/* Styles for Student Registration and Admin Login Pages */
+form {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin: 20px auto;
+    width: 70%;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+input[type="text"], input[type="number"], input[type="tel"], input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+.gender-options {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding-bottom: 10px;
+}
+
+.gender-title {
+    padding-right: 20px;
+}
+
+.gender-options input {
+    margin-left: 5px; /* Space between label and radio button */
+}
+
+
+.logout-btn {
+    background-color: rgb(189, 5, 5);
+}

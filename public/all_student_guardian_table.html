@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student-Guardian Table</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        th {
+            background-color: #28a745;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <button onclick="window.location.href='/student_guardian.html'">Back to Assign Guardian</button>
+            <button class="logout-btn" onclick="window.location.href='/logout'">Logout</button>
+        </ul>
+    </nav>
+    <h1>Guardian-Student Relationships</h1>
+    <table id="guardian-table">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Guardian Name</th>
+                <th>Relationship</th>
+                <th>Phone Num</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be added here dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchStudentGuardianData() {
+            try {
+                const response = await fetch('/getStudentGuardianData');
+                
+                // Check if the response is ok
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                
+                const data = await response.json();
+                const tableBody = document.getElementById('guardian-table').getElementsByTagName('tbody')[0];
+    
+                // Clear existing rows if needed
+                tableBody.innerHTML = ''; 
+    
+                // Populate the table with data
+                data.forEach(row => {
+                    const newRow = tableBody.insertRow();
+                    const studentCell = newRow.insertCell(0);
+                    const guardianCell = newRow.insertCell(1);
+                    const relationshipCell = newRow.insertCell(2);
+                    const cellNum = newRow.insertCell(3);
+                    const email = newRow.insertCell(4)
+    
+                    studentCell.textContent = row.student_name;
+                    guardianCell.textContent = row.guardian_name;
+                    relationshipCell.textContent = row.relationship_type;
+                    cellNum.textContent = row.g_cell;
+                    email.textContent = row.g_email;
+                });
+            } catch (error) {
+                console.error('Error fetching student-guardian data:', error);
+                alert('Failed to fetch data. Please check the console for more details.');
+            }
+        }
+    
+        // Call the function to fetch data on page load
+        window.onload = fetchStudentGuardianData;
+    </script>
+    
+</body>
+</html>
