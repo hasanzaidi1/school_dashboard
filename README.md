@@ -1,4 +1,4 @@
-# Student & Teacher Management System
+# Student, Teacher and Guardian Management System
 
 A web-based application built with Node.js, Express, PostgreSQL, and bcrypt for managing students, teachers, and parent accounts in an educational institution. The system allows administrators to register students, manage teacher and substitute teacher data, and provides parents with a portal to view and register their children.
 
